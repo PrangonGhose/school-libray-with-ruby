@@ -9,6 +9,6 @@ class CapitalizeDecorator < BaseDecorator
   end
 
   def correct_name
-    nameable.name.capitalize
+    nameable.correct_name.capitalize
   end
 end
