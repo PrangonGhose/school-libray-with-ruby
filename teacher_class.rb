@@ -1,4 +1,4 @@
-require_relative './person_class'
+require_relative 'person_class'
 
 class Teacher < Person
   # defining instance variable
