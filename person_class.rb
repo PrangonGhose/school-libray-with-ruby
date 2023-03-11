@@ -7,6 +7,7 @@ class Person < Nameable
     @name = name
     @age = age
     @parent_permission = parent_permission
+    @rentals = []
     super()
   end
 
@@ -14,7 +15,7 @@ class Person < Nameable
   attr_accessor :name, :age
 
   # defining accessor get method
-  attr_reader :id
+  attr_reader :id, :rentals, :parent_permission
 
   # defining can_use_services? method
   def can_use_services?
@@ -24,6 +25,12 @@ class Person < Nameable
   # defining correct_name method
   def correct_name
     @name
+  end
+
+  def add_rentals(rental)
+    @rentals.push(rental)
+    rental.person = self
+    rental.book.add_rentals(rental) unless rental.book.rentals.include?(rental)
   end
 
   # defining private method is_of_age? [method name of_age? is used to avoid linters]
