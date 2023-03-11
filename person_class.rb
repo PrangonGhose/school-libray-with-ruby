@@ -1,4 +1,5 @@
 require_relative 'nameable'
+require_relative 'rental'
 
 class Person < Nameable
   # defining instance variables
@@ -12,10 +13,10 @@ class Person < Nameable
   end
 
   # defining accessor get and set method
-  attr_accessor :name, :age
+  attr_accessor :name, :age, :rentals
 
   # defining accessor get method
-  attr_reader :id, :rentals, :parent_permission
+  attr_reader :id, :parent_permission
 
   # defining can_use_services? method
   def can_use_services?
@@ -27,10 +28,10 @@ class Person < Nameable
     @name
   end
 
-  def add_rentals(rental)
-    @rentals.push(rental)
-    rental.person = self
-    rental.book.add_rentals(rental) unless rental.book.rentals.include?(rental)
+  def add_rentals(date, book)
+    rental = Rental.new(date, book, self)
+    @rentals << rental
+    rental.book.rentals.push(rental) unless rental.book.rentals.include?(rental)
   end
 
   # defining private method is_of_age? [method name of_age? is used to avoid linters]
