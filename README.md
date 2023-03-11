@@ -98,7 +98,7 @@ $ bundle init
 
 $ bundle install (install dependencies)
 
-$ ruby person_class.rb (run the app locally)
+$ ruby main.rb (run the app locally)
 ```
 ### Usage
 
