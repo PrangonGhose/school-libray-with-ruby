@@ -1,6 +1,7 @@
+require_relative 'rental'
+
 class Book
-  attr_accessor :title, :author
-  attr_reader :rentals
+  attr_accessor :title, :author, :rentals
 
   def initialize(title, author)
     @title = title
@@ -8,9 +9,9 @@ class Book
     @rentals = []
   end
 
-  def add_rentals(rental)
-    @rentals.push(rental)
-    rental.book = self
-    rental.person.add_rentals(rentals) unless rental.person.rentals.include?(rental)
+  def add_rentals(date, person)
+    rental = Rental.new(date, self, person)
+    @rentals << rental
+    rental.person.rentals.push(rental) unless rental.person.rentals.include?(rental)
   end
 end
