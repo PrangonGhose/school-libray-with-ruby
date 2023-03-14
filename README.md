@@ -117,6 +117,12 @@ This website is applicable for both mobile and desktop version.
 - GitHub: [@PrangonGhose](https://github.com/PrangonGhose)
 - LinkedIn: [Prangon Ghose](https://www.linkedin.com/in/prangon-ghose/)
 
+👤 **Ricardo Martínez**
+
+- GitHub: [@rmrmrmr](https://github.com/rmrmrmr)
+- Twitter: [@ricmtza](https://twitter.com/ricmtza)
+- LinkedIn: [LinkedIn](www.linkedin.com/in/ricardo-mag)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
