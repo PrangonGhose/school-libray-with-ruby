@@ -10,26 +10,21 @@ class App
   attr_reader :persons
 
   def initialize
-    @books = self.read_books
+    @books = []
     @rentals = []
     @persons = []
   end
 
   def load_people 
-    @persons = JSON.parse(File.read('./memory/person_data.json'))
+    @persons = File.read('./memory/person_data.json')
+    puts 'hi'
     puts @persons
-  end
-
-  def read_books
-    if File.exist?('books_data.json')
-      array = JSON.parse(File.read('books_data.json')).map do |book_data|
-        Book.new(book_data['title'], book_data['author'])
-      end
-    end
-    array
+    puts 'hi'
   end
 
   def list_books
+    # file = './books.json'
+    # if J
     if @books.empty?
       puts 'No book to display. You can add one.'
     else
@@ -46,11 +41,7 @@ class App
   end
 
   def create_student_memory
-    File.write('./memory/person_data.json', JSON.generate(@persons))
-  end
-
-  def create_books_memory
-    File.write('./memory/books_data.json', JSON.generate(@books))
+    File.write('./memory/person_data.json', @persons)
   end
 
   def create_student
@@ -88,7 +79,7 @@ class App
     new_book = Book.new(title, author)
     @books.push(new_book)
     puts 'Book created successfully'
-    create_book
+    new_book.save_book
   end
 
   def create_rental
