@@ -11,6 +11,9 @@ class App
 
   def initialize
     @books = load_books
+    puts load_books
+    # @persons = []
+    # @rentals = []
     @persons = load_persons
     @rentals = load_rentals
   end
@@ -70,17 +73,19 @@ class App
 
   def load_books
     book_list = []
-    if File.exist?('./memory/books.json')
+    if JSON.parse(File.read('./memory/books.json')).length != 0
       book_list = JSON.parse(File.read('./memory/books.json')).map do |book|
         Book.new(book['title'], book['author'])
       end
+    else
+      book_list = []
     end
     book_list
   end
 
   def load_persons
     persons_list = []
-    if File.exist?('./memory/persons.json')
+    if JSON.parse(File.read('./memory/persons.json')).length != 0
       persons_list = JSON.parse(File.read('./memory/persons.json')).map do |person|
         if person['class_name'] == 'Teacher'
           Teacher.new(person['age'], person['specialization'], person['name'])
