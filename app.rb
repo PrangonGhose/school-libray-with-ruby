@@ -16,17 +16,10 @@ class App
   end
 
   def list_books
-    file = './memory/books_data.json'
-    if JSON.parse(File.read(file))['books'].empty?
-      puts 'No books to display. Please add one'
+    if @books.empty?
+      puts 'No book to display. You can add one.'
     else
-      puts 'Saved Books:'
-      data = File.read(file)
-      books_data = JSON.parse(data)
-      books = books_data['books']
-      books.each do |book|
-        puts "Title: #{book['title']} Author: #{book['author']}"
-      end
+      @books.each { |book| puts(" | Title: #{book.title} Author: #{book.author} | ") }
     end
   end
 
@@ -34,10 +27,7 @@ class App
     book_list = []
     rental_list = []
     persons_list = []
-    unless Dir.exist?('memory')
-      Dir.mkdir('memory')
-    end
-    @books.each do |book| 
+    @books.each do |book|
       book_obj = {
         title: book.title,
         author: book.author
@@ -57,22 +47,22 @@ class App
     File.write('./memory/rentals.json', JSON.pretty_generate(rental_list))
 
     @persons.each do |person|
-      if person.class == Teacher
-        persons_obj = {
-          class_name: person.class,
-          age: person.age,
-          name: person.name,
-          specialization: person.specialization
-        }
-      else
-        persons_obj = {
-          class_name: person.class,
-          age: person.age,
-          name: person.name,
-          classroom: person.classroom,
-          parent_permission: person.parent_permission
-        }
-      end
+      persons_obj = if person.instance_of?(Teacher)
+                      {
+                        class_name: person.class,
+                        age: person.age,
+                        name: person.name,
+                        specialization: person.specialization
+                      }
+                    else
+                      {
+                        class_name: person.class,
+                        age: person.age,
+                        name: person.name,
+                        classroom: person.classroom,
+                        parent_permission: person.parent_permission
+                      }
+                    end
       persons_list << persons_obj
     end
     File.write('./memory/persons.json', JSON.pretty_generate(persons_list))
@@ -102,50 +92,35 @@ class App
     persons_list
   end
 
-  def load_rentals
+  def load_rentals # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     rental_list = []
-    if @books.any? and @persons.any?
-      if File.exist?('./memory/rentals.json')
-        rental_list = JSON.parse(File.read('./memory/rentals.json')).map do |rental|
-          bookObj = @books[0]
-          personObj = @persons[0]
-          @books.each do |book|
-            if book.title == rental['book']
-              bookObj = book
-              break
-            end
+    if @books.any? and @persons.any? && File.exist?('./memory/rentals.json')
+      rental_list = JSON.parse(File.read('./memory/rentals.json')).map do |rental|
+        book_obj = @books[0]
+        person_obj = @persons[0]
+        @books.each do |book|
+          if book.title == rental['book']
+            book_obj = book
+            break
           end
-          @persons.each do |person|
-            if person.name == rental['person']
-              personObj = person
-              break
-            end
-          end
-          Rental.new(rental['date'], bookObj, personObj)
         end
+        @persons.each do |person|
+          if person.name == rental['person']
+            person_obj = person
+            break
+          end
+        end
+        Rental.new(rental['date'], book_obj, person_obj)
       end
-      rental_list
-    else
-      rental_list
     end
+    rental_list
   end
 
   def list_all_people
-    file = './memory/persons_data.json'
-    if JSON.parse(File.read(file))['persons'].empty?
-      puts 'No people to display. Please add one'
+    if @persons.empty?
+      puts 'No person to display. You can add one.'
     else
-      puts 'Registered people:'
-      data = File.read(file)
-      persons_data = JSON.parse(data)
-      persons = persons_data['persons']
-      persons.each do |person|
-        if(person['class'] == 'TEACHER')
-          puts "ID: #{person['id']}: #{person['class']} Name:#{person['name']} Age:#{person['age']} Spec:#{person['specialization']}"
-        elsif(person['class'] == 'STUDENT')
-          puts "ID: #{person['id']}: #{person['class']} Name:#{person['name']} Age:#{person['age']} Permission:#{person['parent_permission']}"
-        end
-      end
+      @persons.each { |person| puts(" [#{person.class}] ID: #{person.id} Name: #{person.name} Age: #{person.age} ") }
     end
   end
 
@@ -160,7 +135,6 @@ class App
     new_student = Student.new(age, nil, name, parent_permission)
     @persons.push(new_student)
     puts 'Student created successfully'
-    new_student.save_student
   end
 
   def create_teacher
@@ -173,7 +147,6 @@ class App
     new_teacher = Teacher.new(age, specialization, name)
     @persons.push(new_teacher)
     puts 'Teacher created successfully'
-    new_teacher.save_teacher
   end
 
   def create_book
@@ -184,7 +157,6 @@ class App
     new_book = Book.new(title, author)
     @books.push(new_book)
     puts 'Book created successfully'
-    new_book.save_book
   end
 
   def create_rental
