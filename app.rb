@@ -4,14 +4,29 @@ require_relative 'teacher_class'
 require_relative 'classroom'
 require_relative 'book'
 require_relative 'rental'
+require 'json'
 
 class App
   attr_reader :persons
 
   def initialize
-    @books = []
+    @books = self.read_books
     @rentals = []
     @persons = []
+  end
+
+  def load_people 
+    @persons = JSON.parse(File.read('./memory/person_data.json'))
+    puts @persons
+  end
+
+  def read_books
+    if File.exist?('books_data.json')
+      array = JSON.parse(File.read('books_data.json')).map do |book_data|
+        Book.new(book_data['title'], book_data['author'])
+      end
+    end
+    array
   end
 
   def list_books
@@ -30,6 +45,14 @@ class App
     end
   end
 
+  def create_student_memory
+    File.write('./memory/person_data.json', JSON.generate(@persons))
+  end
+
+  def create_books_memory
+    File.write('./memory/books_data.json', JSON.generate(@books))
+  end
+
   def create_student
     print('Enter Name of the student: ')
     name = gets.chomp
@@ -41,6 +64,8 @@ class App
     new_student = Student.new(age, nil, name, parent_permission)
     @persons.push(new_student)
     puts 'Student created successfully'
+    create_student_memory
+    load_people
   end
 
   def create_teacher
@@ -63,6 +88,7 @@ class App
     new_book = Book.new(title, author)
     @books.push(new_book)
     puts 'Book created successfully'
+    create_book
   end
 
   def create_rental
