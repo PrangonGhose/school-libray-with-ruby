@@ -73,19 +73,18 @@ class App
 
   def load_books
     book_list = []
-    if JSON.parse(File.read('./memory/books.json')).length != 0
-      book_list = JSON.parse(File.read('./memory/books.json')).map do |book|
+    if JSON.parse(File.read('./memory/books.json')).empty?
+      []
+    else
+      JSON.parse(File.read('./memory/books.json')).map do |book|
         Book.new(book['title'], book['author'])
       end
-    else
-      book_list = []
     end
-    book_list
   end
 
   def load_persons
     persons_list = []
-    if JSON.parse(File.read('./memory/persons.json')).length != 0
+    unless JSON.parse(File.read('./memory/persons.json')).empty?
       persons_list = JSON.parse(File.read('./memory/persons.json')).map do |person|
         if person['class_name'] == 'Teacher'
           Teacher.new(person['age'], person['specialization'], person['name'])
