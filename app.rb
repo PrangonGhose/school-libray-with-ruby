@@ -15,20 +15,18 @@ class App
     @persons = []
   end
 
-  def load_people 
-    @persons = File.read('./memory/person_data.json')
-    puts 'hi'
-    puts @persons
-    puts 'hi'
-  end
-
   def list_books
-    # file = './books.json'
-    # if J
-    if @books.empty?
-      puts 'No book to display. You can add one.'
+    file = './memory/books_data.json'
+    if JSON.parse(File.read(file))['books'].empty?
+      puts 'No books to display. Please add one'
     else
-      @books.each { |book| puts(" | Title: #{book.title} Author: #{book.author} | ") }
+      puts 'Saved Books:'
+      data = File.read(file)
+      books_data = JSON.parse(data)
+      books = books_data['books']
+      books.each do |book|
+        puts "Title: #{book['title']} Author: #{book['author']}"
+      end
     end
   end
 
@@ -38,10 +36,6 @@ class App
     else
       @persons.each { |person| puts(" [#{person.class}] ID: #{person.id} Name: #{person.name} Age: #{person.age} ") }
     end
-  end
-
-  def create_student_memory
-    File.write('./memory/person_data.json', @persons)
   end
 
   def create_student
@@ -55,8 +49,6 @@ class App
     new_student = Student.new(age, nil, name, parent_permission)
     @persons.push(new_student)
     puts 'Student created successfully'
-    create_student_memory
-    load_people
   end
 
   def create_teacher
