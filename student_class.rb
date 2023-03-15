@@ -16,13 +16,4 @@ class Student < Person
   def play_hooky
     '¯\(ツ)/¯'
   end
-
-  def save_student
-    file = File.read('./memory/persons_data.json')
-    data = JSON.parse(file)
-    person_json = { age: @age, classroom: @classroom, name: @name, parent_permission: @parent_permission, id: @id, class: 'STUDENT'}
-    data['persons'] << person_json
-    json = data.to_json
-    File.write('./memory/persons_data.json', json)
-  end
 end
