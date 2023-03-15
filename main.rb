@@ -26,6 +26,7 @@ class Main
       puts ''
       run_menu(app, option) unless option.zero?
     end
+    app.save_data
     puts 'Thank you for using this app'
   end
 end
