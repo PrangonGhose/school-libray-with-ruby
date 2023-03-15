@@ -31,10 +31,21 @@ class App
   end
 
   def list_all_people
-    if @persons.empty?
-      puts 'No person to display. You can add one.'
+    file = './memory/persons_data.json'
+    if JSON.parse(File.read(file))['persons'].empty?
+      puts 'No people to display. Please add one'
     else
-      @persons.each { |person| puts(" [#{person.class}] ID: #{person.id} Name: #{person.name} Age: #{person.age} ") }
+      puts 'Registered people:'
+      data = File.read(file)
+      persons_data = JSON.parse(data)
+      persons = persons_data['persons']
+      persons.each do |person|
+        if(person['class'] == 'TEACHER')
+          puts "ID: #{person['id']}: #{person['class']} Name:#{person['name']} Age:#{person['age']} Spec:#{person['specialization']}"
+        elsif(person['class'] == 'STUDENT')
+          puts "ID: #{person['id']}: #{person['class']} Name:#{person['name']} Age:#{person['age']} Permission:#{person['parent_permission']}"
+        end
+      end
     end
   end
 
@@ -49,6 +60,7 @@ class App
     new_student = Student.new(age, nil, name, parent_permission)
     @persons.push(new_student)
     puts 'Student created successfully'
+    new_student.save_student
   end
 
   def create_teacher
@@ -61,6 +73,7 @@ class App
     new_teacher = Teacher.new(age, specialization, name)
     @persons.push(new_teacher)
     puts 'Teacher created successfully'
+    new_teacher.save_teacher
   end
 
   def create_book
