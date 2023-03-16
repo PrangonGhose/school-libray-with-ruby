@@ -15,13 +15,4 @@ class Book
     @rentals << rental
     rental.person.rentals.push(rental) unless rental.person.rentals.include?(rental)
   end
-
-  def save_book
-    file = File.read('./memory/books_data.json')
-    data = JSON.parse(file)
-    book_json = { title: @title, author: @author }
-    data['books'] << book_json
-    json = data.to_json
-    File.write('./memory/books_data.json', json)
-  end
 end
