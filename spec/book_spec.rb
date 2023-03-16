@@ -33,4 +33,4 @@ describe Book do
       expect(person.rentals).to include(rental)
     end
   end
-end 
+end

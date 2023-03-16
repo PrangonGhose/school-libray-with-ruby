@@ -39,5 +39,5 @@ describe Classroom do
       classroom.add_student(18, parent_permission: false)
       expect(Student).to have_received(:new).with(18, classroom, 'Unknown', false)
     end
-  end 
-end 
+  end
+end
