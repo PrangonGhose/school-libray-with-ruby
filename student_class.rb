@@ -1,4 +1,5 @@
 require_relative 'person_class'
+require 'json'
 
 class Student < Person
   attr_accessor :classroom

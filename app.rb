@@ -4,14 +4,15 @@ require_relative 'teacher_class'
 require_relative 'classroom'
 require_relative 'book'
 require_relative 'rental'
+require 'json'
 
 class App
   attr_reader :persons
 
   def initialize
-    @books = []
-    @rentals = []
-    @persons = []
+    @books = load_books
+    @persons = load_persons
+    @rentals = load_rentals
   end
 
   def list_books
@@ -20,6 +21,101 @@ class App
     else
       @books.each { |book| puts(" | Title: #{book.title} Author: #{book.author} | ") }
     end
+  end
+
+  def save_data
+    book_list = []
+    rental_list = []
+    persons_list = []
+    @books.each do |book|
+      book_obj = {
+        title: book.title,
+        author: book.author
+      }
+      book_list << book_obj
+    end
+    File.write('./memory/books.json', JSON.pretty_generate(book_list))
+
+    @rentals.each do |rental|
+      rental_obj = {
+        date: rental.date,
+        book: rental.book.title,
+        person: rental.person.name
+      }
+      rental_list << rental_obj
+    end
+    File.write('./memory/rentals.json', JSON.pretty_generate(rental_list))
+
+    @persons.each do |person|
+      persons_obj = if person.instance_of?(Teacher)
+                      {
+                        class_name: person.class,
+                        age: person.age,
+                        name: person.name,
+                        specialization: person.specialization
+                      }
+                    else
+                      {
+                        class_name: person.class,
+                        age: person.age,
+                        name: person.name,
+                        classroom: person.classroom,
+                        parent_permission: person.parent_permission
+                      }
+                    end
+      persons_list << persons_obj
+    end
+    File.write('./memory/persons.json', JSON.pretty_generate(persons_list))
+  end
+
+  def load_books
+    book_list = []
+    if JSON.parse(File.read('./memory/books.json')).any?
+      book_list = JSON.parse(File.read('./memory/books.json')).map do |book|
+        Book.new(book['title'], book['author'])
+      end
+    end
+    book_list
+  end
+
+  def load_persons
+    persons_list = []
+    if JSON.parse(File.read('./memory/persons.json')).any?
+      persons_list = JSON.parse(File.read('./memory/persons.json')).map do |person|
+        if person['class_name'] == 'Teacher'
+          Teacher.new(person['age'], person['specialization'], person['name'])
+        elsif person['class_name'] == 'Student'
+          Student.new(person['age'], person['classroom'], person['name'], person['parent_permission'])
+        end
+      end
+    end
+    persons_list
+  end
+
+  def load_rentals # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    rental_list = []
+    b_list = JSON.parse(File.read('./memory/persons.json'))
+    p_list = JSON.parse(File.read('./memory/persons.json'))
+    if b_list.any? && p_list.any? && JSON.parse(File.read('./memory/rentals.json')).any?
+      rental_list = JSON.parse(File.read('./memory/rentals.json')).map do |rental|
+        book_obj = @books[0]
+        person_obj = @persons[0]
+        @books.each do |book|
+          if book.title == rental['book']
+            book_obj = book
+            break
+          end
+        end
+        @persons.each do |person|
+          if person.name == rental['person']
+            person_obj = person
+            break
+          end
+        end
+        Rental.new(rental['date'], book_obj, person_obj)
+      end
+    end
+    rental_list
   end
 
   def list_all_people
@@ -82,7 +178,8 @@ class App
       index = gets.chomp.to_i
       book = @books[index]
       date = Time.new
-      Rental.new(date.strftime('%m-%d-%y'), book, person)
+      new_rental = Rental.new(date.strftime('%m-%d-%y'), book, person)
+      @rentals.push(new_rental)
       puts('Book has been rented successfully to the selected person')
     end
   end
