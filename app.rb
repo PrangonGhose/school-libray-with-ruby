@@ -68,7 +68,6 @@ class App
     File.write('./memory/persons.json', JSON.pretty_generate(persons_list))
   end
 
-
   def load_books
     book_list = []
     if JSON.parse(File.read('./memory/books.json')).any?
