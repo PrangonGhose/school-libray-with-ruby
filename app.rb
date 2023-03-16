@@ -72,7 +72,6 @@ class App
   end
 
   def load_books
-    book_list = []
     if JSON.parse(File.read('./memory/books.json')).empty?
       []
     else
