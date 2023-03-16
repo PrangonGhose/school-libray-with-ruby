@@ -68,9 +68,10 @@ class App
     File.write('./memory/persons.json', JSON.pretty_generate(persons_list))
   end
 
+
   def load_books
     book_list = []
-    if File.exist?('./memory/books.json')
+    if JSON.parse(File.read('./memory/books.json')).any?
       book_list = JSON.parse(File.read('./memory/books.json')).map do |book|
         Book.new(book['title'], book['author'])
       end
@@ -80,7 +81,7 @@ class App
 
   def load_persons
     persons_list = []
-    if File.exist?('./memory/persons.json')
+    if JSON.parse(File.read('./memory/persons.json')).any?
       persons_list = JSON.parse(File.read('./memory/persons.json')).map do |person|
         if person['class_name'] == 'Teacher'
           Teacher.new(person['age'], person['specialization'], person['name'])
@@ -94,7 +95,9 @@ class App
 
   def load_rentals # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     rental_list = []
-    if @books.any? and @persons.any? && File.exist?('./memory/rentals.json')
+    b_list = JSON.parse(File.read('./memory/persons.json'))
+    p_list = JSON.parse(File.read('./memory/persons.json'))
+    if b_list.any? && p_list.any? && JSON.parse(File.read('./memory/rentals.json')).any?
       rental_list = JSON.parse(File.read('./memory/rentals.json')).map do |rental|
         book_obj = @books[0]
         person_obj = @persons[0]
